@@ -1,0 +1,52 @@
+---
+title: "Gaza_matching"
+author: "Amit Loewenthal"
+date: "8 ביוני 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+## Run this only once and then not again until we want a new version from github
+library('devtools')
+library('withr')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, warnings=FALSE}
+
+library(ggplot2)
+library(RItools)
+library(optmatch)
+library(sandwich)
+library(lmtest)
+library(estimatr)
+library(haven)
+```
+
+
+```{r data_import}
+pl_data <- read_dta("C:\\Users\\akadi\\Documents\\PhD\\Data\\Chapter 4\\matching_gaza.dta")
+pl.data <- data.frame(id=row.names(pl_data), pl_data)
+rm(pl_data)
+```
+
+```{r pair.matching}
+the.pairs <- pairmatch(treatment ~ r_dwage + unemployment + fatalities, controls = 1, data = pl.data)
+
+bal.test <- xBalance(treatment ~ r_dwage + unemployment + fatalities,strata = list(nonstrat=NULL,the.pairs = ~the.pairs),data = pl.data,report ="all")
+    
+bal.test.overall <- data.frame(bal.test$overall)
+bal.test.results <- data.frame(bal.test$results)
+
+pl.data[names(the.pairs),"the.pairs"]<-the.pairs
+
+```
+
+```{}
+```
